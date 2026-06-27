@@ -1,49 +1,70 @@
+import { randomBytes } from "node:crypto";
 import nodemailer from "nodemailer";
 import bcryptjs from "bcryptjs";
-import  User from "@/models/userModels"
+import User from "@/models/userModels";
 
-export const sendEmail = async ({email, emailType, userId}: any ) => {
+const emailConfig = {
+    host: "sandbox.smtp.mailtrap.io",
+    port: 2525,
+    user: "07252e5abe9b02",
+    pass: "081850435e4b03",
+    from: "team@example.com",
+};
+
+export const sendEmail = async ({ email, emailType, userId }: any) => {
     try {
-        const hashedUserId = await bcryptjs.hash(userId.toString() , 10) ;
-        if(emailType === "VERIFY") {
-          await User.findByIdAndUpdate(userId , {verificationToken : hashedUserId , 
-            verificationTokenExpiry : Date.now() + 3600000
-            } , {new : true}) ;  
-        }else if(emailType === "RESET") {
-          await User.findByIdAndUpdate(userId , {forgotPasswordToken : hashedUserId , 
-            forgotPasswordExpiry : Date.now() + 3600000
-            } , {new : true}) ;
+        const rawToken = randomBytes(32).toString("hex");
+        const hashedToken = await bcryptjs.hash(rawToken, 10);
+        const domain = process.env.DOMAIN || "http://localhost:3000";
+
+        if (emailType === "VERIFY") {
+            await User.findByIdAndUpdate(
+                userId,
+                {
+                    verificationToken: hashedToken,
+                    verificationTokenExpiry: Date.now() + 3600000,
+                },
+                { new: true }
+            );
+        } else if (emailType === "RESET") {
+            await User.findByIdAndUpdate(
+                userId,
+                {
+                    forgotPasswordToken: hashedToken,
+                    forgotPasswordExpiry: Date.now() + 3600000,
+                },
+                { new: true }
+            );
         }
 
+        const { host, port, user, pass, from } = emailConfig;
 
+        if (!host || !user || !pass) {
+            console.warn("Email credentials are not configured. Skipping verification email.");
+            return { skipped: true };
+        }
 
+        const transport = nodemailer.createTransport({
+            host,
+            port,
+            secure: port === 465,
+            auth: {
+                user,
+                pass,
+            },
+        });
 
+        const mailOptions = {
+            from: `"Example Team" <${from}>`,
+            to: email,
+            subject: emailType === "VERIFY" ? "Verify your email" : "Reset your password",
+            text: "Hello world?",
+            html: `<p>Click <a href="${domain}/verifyemail?token=${rawToken}">here</a> to ${emailType === "VERIFY" ? "verify your email" : "reset your password"} or copy the link: ${domain}/verifyemail?token=${rawToken}</p>`,
+        };
 
-
-       // Create a transporter using SMTP
-        const transporter = nodemailer.createTransport({
-        host: "smtp.example.com",
-        port: 587,
-        secure: false , // use STARTTLS (upgrade connection to TLS after connecting)
-        auth: {
-          user: process.env.SMTP_USER,
-          pass: process.env.SMTP_PASS,
-        },
-      });
-
-    const mailOptions = {
-    from: '"Example Team" <team@example.com>', // sender address
-    to: email, // list of recipients
-    subject: emailType === "VERIFY" ? "Verify your email" : "Reset your password", // subject line
-    text: "Hello world?", // plain text body
-    html: "<b>mail</b>", // HTML body
-    };
-
-    const mailResponse = await transporter.sendMail(mailOptions);
-
-    return mailResponse
-
-    } catch (error:any) {
-        throw new Error(error.message)
+        return await transport.sendMail(mailOptions);
+    } catch (error: any) {
+        console.error("Email sending failed", error);
+        return { skipped: true, error: error.message };
     }
-}
+};
