@@ -21,9 +21,18 @@ export async function post(req : NextRequest){
             return NextResponse.json({message : "Invalid password "} , { status : 400}) ;
         }
 
+        const tokenDate = {
+            id : user._id ,
+            email : user.email ,
+            username : user.username
+        }
+        const token =  jwt.sign(tokenDate , process.env.TOKEN_SECRET! , { expiresIn : "1d" }) ;
+        const respone = NextResponse.json({ message : "Login successful"  , success : true , token }) ;
+        respone.cookies.set("token" , token , { httpOnly : true }) ;
 
+        return respone ;
 
-    } catch (error : any) {
+        } catch (error : any) {
         return NextResponse.json({   message:  error.message || "Something went wrong" }, { status: 500 });
     }
 }
