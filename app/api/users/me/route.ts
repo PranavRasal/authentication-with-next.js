@@ -4,7 +4,7 @@ import User from "@/models/userModels";
 
 import { getDataFromToken } from "@/helper/getDataFromToken";
 
-export async function post(req : NextRequest){
+export async function POST(req : NextRequest){
     try {
         await connect();
         const userId = await getDataFromToken(req) ;

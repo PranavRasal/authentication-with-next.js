@@ -7,10 +7,13 @@ export async function POST(req: NextRequest) {
     try {
         await connect();
         const reqBody = await req.json();
-        const {token} = reqBody ;
+        const { token } = reqBody;
         console.log("Token received:", token);
 
-        const user = await User.findOne({verificationToken : token} ) 
+        const user = await User.findOne({
+            verificationToken: token,
+            verificationTokenExpiry: { $gt: new Date() },
+        });
 
         if (!user) {
             return NextResponse.json({ message: "user not found" }, { status: 400 });

@@ -22,7 +22,7 @@ export const sendEmail = async ({ email, emailType, userId }: any) => {
                 userId,{
                 $set: {   
                     verificationToken: hashedToken,
-                    verificationTokenExpiry: Date.now() + 3600000,
+                    verificationTokenExpiry: new Date(Date.now() + 3600000),
                 }
             },
                 { new: true }
@@ -32,7 +32,7 @@ export const sendEmail = async ({ email, emailType, userId }: any) => {
                 userId,{
                 $set: {
                     forgotPasswordToken: hashedToken,
-                    forgotPasswordExpiry: Date.now() + 3600000,
+                    forgotPasswordExpiry: new Date(Date.now() + 3600000),
                 }
             },
                 { new: true }
@@ -61,10 +61,11 @@ export const sendEmail = async ({ email, emailType, userId }: any) => {
             to: email,
             subject: emailType === "VERIFY" ? "Verify your email" : "Reset your password",
             text: "Hello world?",
-            html: `<p>Click <a href="${domain}/verifyemail?token=${rawToken}">here</a> to ${emailType === "VERIFY" ? "verify your email" : "reset your password"} or copy the link: ${domain}/verifyemail?token=${rawToken}</p>`,
+            html: `<p>Click <a href="${domain}/verifyemail?token=${hashedToken}">here</a> to ${emailType === "VERIFY" ? "verify your email" : "reset your password"} or copy the link: ${domain}/verifyemail?token=${hashedToken}</p>`,
         };
 
         return await transport.sendMail(mailOptions);
+
     } catch (error: any) {
         console.error("Email sending failed", error);
         return { skipped: true, error: error.message };
