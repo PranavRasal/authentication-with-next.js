@@ -27,8 +27,8 @@ export async function POST(req : NextRequest){
             username : user.username
         }
         const token =  jwt.sign(tokenDate , process.env.TOKEN_SECRET! , { expiresIn : "1d" }) ;
-        const respone = NextResponse.json({ message : "Login successful"  , success : true }) ;
-        respone.cookies.set("token" , token , { httpOnly : true }) ;
+        const respone = NextResponse.json({ message : "Login successful"  , success : true , token : token }) ;
+        respone.cookies.set("token" , token , { httpOnly : true } ) ;
 
         return respone ;
 

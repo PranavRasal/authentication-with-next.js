@@ -17,20 +17,17 @@ export default function signupPage() {
   const[disabled , setDisabled] = useState(false)
   const[loading , setLoading] = useState(false)
 
-  const onSingup = async()=>{
+  const onSingup = async () => {
     try {
-
       setLoading(true)
-      const response = await axios.post("/api/users/signup",user)
-      toast.success("Signup successful!")
-      console.log("signup successful",response.data)
+      const response = await axios.post("/api/users/signup", user)
+      toast.success(response.data?.message || "Signup successful!")
+      console.log("signup successful", response.data)
       route.push("/login")
-
-
-
-    } catch (error : any) {
-      toast.error(error.message)
-      console.log("signup failed",error)
+    } catch (error: any) {
+      const message = error?.response?.data?.message || error?.message || "Signup failed"
+      toast.error(message)
+      console.log("signup failed", error)
     } finally {
       setLoading(false)
     }
@@ -68,7 +65,7 @@ export default function signupPage() {
             onChange={(e) => setUser({ ...user, username: e.target.value })}
             className='border border-gray-300 rounded-md p-2 w-full'
             placeholder='username'
-            required
+            
           />
         </div>
 
@@ -81,7 +78,7 @@ export default function signupPage() {
             onChange={(e) => setUser({ ...user, email: e.target.value })}
             className='border border-gray-300 rounded-md p-2 w-full'
             placeholder='email'
-            required
+            
           />
         </div>
 
@@ -94,7 +91,7 @@ export default function signupPage() {
             onChange={(e) => setUser({ ...user, password: e.target.value })}
             className='border border-gray-300 rounded-md p-2 w-full'
             placeholder='password'
-            required
+            
           />
         </div>
         <br></br>
@@ -102,9 +99,9 @@ export default function signupPage() {
         <button
           onClick={onSingup}
           className='w-full bg-blue-300 text-white px-4 py-2 rounded-md hover:bg-blue-600 disabled:opacity-50'
-          disabled={disabled}
+          // disabled={disabled || loading}
         >
-          {disabled ? "Fill all fields" : "Signup"}
+          {loading ? "Processing..." : disabled ? "Fill all fields" : "Signup"}
         </button>
         
           
