@@ -45,9 +45,8 @@ export default function signupPage() {
   return (
     <div className='relative min-h-screen flex items-center justify-center bg-white'>
       <img
-        src='https://media.istockphoto.com/id/467367026/photo/perfect-sky-and-ocean.jpg?s=612x612&w=0&k=20&c=LZYFRxIhuKQom3l-kR3TLN7GikSJYJz9NRglQ3nngBw='
-        alt='background'
-        className='absolute inset-0 h-full w-full object-cover opacity-30'
+        src='https://i.ytimg.com/vi/ACiD5RDxyhw/hq720.jpg?sqp=-oaymwEhCK4FEIIDSFryq4qpAxMIARUAAAAAGAElAADIQj0AgKJD&rs=AOn4CLDVjjvzu5M-27Ew2tjh9u0fXYmviA'
+        className='absolute inset-0 h-full w-full object-cover opacity-80'
       />
 
       <div className='relative z-10 w-full max-w-md rounded-3xl border-2 border-white/60 p-9 shadow-xl bg-transparent text-black space-y-4 backdrop-blur-lg'>
