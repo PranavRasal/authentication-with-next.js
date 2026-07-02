@@ -45,7 +45,7 @@ export default function ProfilePage() {
   return (
     <div className='relative min-h-screen flex items-center justify-center bg-white'>
       <img
-        src='https://assets.architecturaldigest.in/photos/60083af8f93542952b6654c6/16:9/w_2560%2Cc_limit/home-decor-Duplex-apartment-home-design-pexels-vecislavas-popa-1571460-1366x768.jpg'
+        src='https://img.magnific.com/premium-vector/vector-blue-sky-clouds-anime-clean-style_1165781-2588.jpg?semt=ais_hybrid&w=740&q=80'
         alt='background'
         className='absolute inset-0 h-full w-full object-cover opacity-60'
       />
